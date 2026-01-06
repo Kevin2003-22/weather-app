@@ -3,7 +3,7 @@ const apiKey = "5e94398bf452a3f2f4e6f679b30cfe27";
 function getWeather() {
     const city = document.getElementById("cityInput").value;
 
-    if (city === "") {
+    if (!city) {
         alert("Please enter a city name");
         return;
     }
@@ -13,14 +13,23 @@ function getWeather() {
     fetch(url)
         .then(response => response.json())
         .then(data => {
-            document.getElementById("city").textContent =
-                `City: ${data.name}`;
+            if (data.cod !== 200) {
+                alert("City not found");
+                return;
+            }
+
+            document.getElementById("city").textContent = data.name;
             document.getElementById("temperature").textContent =
-                `Temperature: ${data.main.temp} °C`;
+                `${Math.round(data.main.temp)} °C`;
             document.getElementById("description").textContent =
-                `Weather: ${data.weather[0].description}`;
+                data.weather[0].description;
+
+            document.getElementById("icon").src =
+                `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
+
+            document.getElementById("weatherResult").classList.add("show");
         })
         .catch(() => {
-            alert("City not found");
+            alert("Error fetching weather data");
         });
 }
